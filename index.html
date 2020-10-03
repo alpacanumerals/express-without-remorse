@@ -132,6 +132,7 @@
     preload: function () {
       this.load.image('bote', 'assets/bote.png');
       this.load.image('turret', 'assets/bote.png');
+      this.load.image('bullet', 'assets/bote.png');
     },
 
     create: function () {
@@ -154,22 +155,41 @@
         collideWorldBounds: false,
       });
 
-      resetTurret = (sentry, turret) => {
+      const resetTurret = (sentry, turret) => {
         turret.setY(-720);
-      }
+      };
 
       lowerBoundSentry = this.physics.add.sprite(50, 720, 'bote');
       lowerBoundSentry.setImmovable();
       this.physics.add.collider(turrets, lowerBoundSentry, resetTurret);
 
       bullets = this.physics.add.group();
-      this.physics.add.collider(bote, bullets);
 
+      const hit = (bote, bullet) => {
+        bullet.disableBody(true, true);
+      };
+      this.physics.add.collider(bote, bullets, hit);
 
+      const basicShot = (turret, time) => {
+        const shoot = () => {
+          const bullet = bullets.create(turret.x, turret.y, 'bullet');
+          bullet.setVelocityY(globalspeed);
+          bullet.setVelocityX(400);
+          bullet.setTint(0xff0000);
+        }
+        if (time > turret.shotTimer) {
+          shoot();
+          turret.shotTimer = time + Phaser.Math.Between(0, 10000);
+        }
+      };
+      turrets.children.iterate((turret) => turret.shotTimer = Phaser.Math.Between(0, 10000));
+      turrets.children.iterate((turret) => turret.shootBehaviour = basicShot);
     },
 
-    update: function () {
+    update: function (time) {
       turrets.setVelocityY(globalspeed);
+
+      turrets.children.iterate((turret) => turret.shootBehaviour(turret, time))
 
       if (cursors.left.isDown || wasd.left.isDown)
       {
