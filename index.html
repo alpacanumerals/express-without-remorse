@@ -1,15 +1,35 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html>
 <head>
-    <meta charset="UTF-8" />
-    <title>Express Without Remorse</title>
-    <!--<script src="//cdn.jsdelivr.net/npm/phaser@3.21.0/dist/phaser.js"></script>-->
-    <style type="text/css">
-        body {
-            margin: 0;
-        }
-    </style>
+  <title>Express Without Remorse</title>
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.15.1/dist/phaser-arcade-physics.min.js"></script>
 </head>
 <body>
-  WARNING! An Express Train Is Approaching Fast. Please Stand Behind The Yellow Line.
+
+  <script>
+  var config = {
+    type: Phaser.AUTO,
+    width: 800,
+    height: 600,
+    physics: {},
+    scene: {
+      preload: preload,
+      create: create,
+      update: update
+    }
+  };
+
+  var game = new Phaser.Game(config);
+
+  function preload() {
+  }
+
+  function create() {
+  }
+
+  function update() {
+  }
+  </script>
+
 </body>
+</html>
