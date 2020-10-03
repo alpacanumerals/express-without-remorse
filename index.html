@@ -7,15 +7,31 @@
 <body>
 
   <script>
-  // const NavMenu = (scene) => {
-  //   const style = { fontSize: '16px', fill: '#FFF' }
-  //   const station = scene.add.text(50, 100, 'Station', style)
-  //
-  //
-  //   const bar = scene.add.text(50, 100, 'Dive Bar', style)
-  //   const junkyard = scene.add.text(50, 100, 'Junkyard', style)
-  //   const platform = scene.add.text(50, 100, 'Platform', style)
-  // }
+  const navMenu = (scene) => {
+    console.log('ping');
+    console.log(scene);
+    const style = { fontSize: '16px', fill: '#FFF' }
+    const station = scene.add.text(50, 100, 'Station', style)
+    station.setInteractive();
+    station.on('pointerup', function () {
+      scene.scene.start('StationScene')
+    })
+    const bar = scene.add.text(50, 120, 'Dive Bar', style)
+    bar.setInteractive();
+    bar.on('pointerup', function () {
+      scene.scene.start('BarScene')
+    })
+    const junkyard = scene.add.text(50, 140, 'Junkyard', style)
+    junkyard.setInteractive();
+    junkyard.on('pointerup', function () {
+      scene.scene.start('JunkScene')
+    })
+    const platform = scene.add.text(50, 160, 'Platform', style)
+    platform.setInteractive();
+    platform.on('pointerup', function () {
+      scene.scene.start('TrainScene')
+    })
+  }
 
   const StationScene = new Phaser.Class({
 
@@ -35,13 +51,14 @@
 
     create: function ()
     {
-      this.add.sprite(600, 480, 'map');//.setScale(.5);
+      this.add.sprite(450, 320, 'map').setScale(.75);
+      navMenu(this);
 
-      this.input.once('pointerdown', function () {
-
-        this.scene.start('BarScene');
-
-      }, this);
+      // this.input.once('pointerdown', function () {
+      //
+      //   this.scene.start('BarScene');
+      //
+      // }, this);
     }
 
   });
@@ -68,12 +85,13 @@
       ]
 
       this.add.text(100, 300, text, { fontSize: '16px', fill: '#FF0' });
+      navMenu(this);
 
-      this.input.once('pointerdown', function () {
-
-        this.scene.start('JunkScene');
-
-      }, this);
+      // this.input.once('pointerdown', function () {
+      //
+      //   this.scene.start('JunkScene');
+      //
+      // }, this);
     }
 
   });
@@ -100,12 +118,13 @@
         'and MYSTERIOUS PODS CONTAINING GIRLS'
       ]
       this.add.text(100, 200, text, { fontSize: '16px', fill: '#F0F' });
+      navMenu(this);
 
-      this.input.once('pointerdown', function () {
-
-        this.scene.start('TrainScene');
-
-      }, this);
+      // this.input.once('pointerdown', function () {
+      //
+      //   this.scene.start('TrainScene');
+      //
+      // }, this);
     }
 
   });
@@ -118,7 +137,7 @@
 
     function JunkScene ()
     {
-        Phaser.Scene.call(this, { key: 'TrainScene' });
+      Phaser.Scene.call(this, { key: 'TrainScene' });
     },
 
     preload: function ()
@@ -126,21 +145,27 @@
 
     create: function ()
     {
-        this.add.text(100, 400, 'You see a COOL SHMUP SEQUENCE, we promise', { fontSize: '16px', fill: '#0FF' });
+      this.add.text(
+        100,
+        400,
+        'You see a COOL SHMUP SEQUENCE, we promise',
+        { fontSize: '16px', fill: '#0FF' }
+      );
+      navMenu(this);
 
-        this.input.once('pointerdown', function () {
-
-            this.scene.start('StationScene');
-
-        }, this);
+      // this.input.once('pointerdown', function () {
+      //
+      //     this.scene.start('StationScene');
+      //
+      // }, this);
     }
 
   });
 
   var config = {
     type: Phaser.AUTO,
-    width: 1200,
-    height: 960,
+    width: 900,
+    height: 720,
     physics: {},
     scene: [StationScene, BarScene, JunkScene, TrainScene]
   };
