@@ -114,7 +114,7 @@
   var bullets;
   var lowerBoundSentry;
 
-  var globalspeed = 200;
+  var globalspeed = 100;
 
   const TrainScene = new Phaser.Class({
 
@@ -136,8 +136,6 @@
       navMenu(this);
       bote = this.physics.add.sprite(450, 360, 'bote');
       bote.setCollideWorldBounds(true);
-      const botePos = bote.body.position;
-      const boteCen = bote.body.center
       bote.setCircle(3, 11, 14);
 
       cursors = this.input.keyboard.createCursorKeys();
@@ -162,8 +160,13 @@
       lowerBoundSentry = this.physics.add.sprite(50, 720, 'bote');
       lowerBoundSentry.setImmovable();
       this.physics.add.collider(turrets, lowerBoundSentry, resetTurret);
-
-      bullets = this.physics.add.group();
+      bullets = this.physics.add.group({});
+      // bullets = this.physics.add.group({
+      //   key: 'bullet',
+      //   repeat: 1000,
+      //   setXY: {x: -100, y: -100},
+      //   collideWorldBounds: false
+      // });
 
       const hit = (bote, bullet) => {
         bullet.disableBody(true, true);
@@ -176,15 +179,17 @@
         const shoot = () => {
           const bullet = bullets.create(turret.x, turret.y, 'bullet');
           bullet.setVelocityY(globalspeed);
-          bullet.setVelocityX(400);
+          bullet.setVelocityX(100);
+          //bullet.setCircle(3, 11, 14);
         }
         if (time > turret.shotTimer) {
           shoot();
-          turret.shotTimer = time + Phaser.Math.Between(0, 2500);
+          turret.shotTimer = time + Phaser.Math.Between(0, 5000);
         }
       };
-      turrets.children.iterate((turret) => turret.shotTimer = time + Phaser.Math.Between(0, 2500));
+      turrets.children.iterate((turret) => turret.shotTimer = time + Phaser.Math.Between(0, 5000));
       turrets.children.iterate((turret) => turret.shootBehaviour = basicShot);
+      // console.log(turrets.getChildren());
     },
 
     update: function () {
@@ -230,7 +235,7 @@
       default: 'arcade',
       arcade: {
         gravity: { y: 0 },
-        debug: false,
+        debug: true,
       }},
     scene: [StationScene, BarScene, JunkScene, TrainScene]
   };
