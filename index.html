@@ -45,12 +45,15 @@
 
     preload: function ()
     {
-      this.load.image('map', 'assets/smap1.png');
+      this.load.image('platform', 'assets/platform.png');
+      this.load.image('map1', 'assets/smap1.png');
+      this.load.image('map2', 'assets/smap2.png');
+      this.load.image('map3', 'assets/smap3.png');
     },
 
     create: function ()
     {
-      this.add.sprite(450, 360, 'map').setScale(.75);
+      this.add.sprite(450, 360, 'platform');
       navMenu(this);
     }
   });
@@ -67,16 +70,13 @@
     },
 
     preload: function ()
-    {},
+    {
+      this.load.image('bar', 'assets/spacebar.png');
+    },
 
     create: function ()
     {
-      const text = [
-        'You see a SEEDY DIVE BAR',
-        'full of SALTY SPACERS and IONISED ASTRONAUTS'
-      ]
-
-      this.add.text(100, 300, text, { fontSize: '16px', fill: '#FF0' });
+      this.add.sprite(450, 360, 'bar');
       navMenu(this);
     }
   });
@@ -93,16 +93,13 @@
     },
 
     preload: function ()
-    {},
+    {
+      this.load.image('junkyard', 'assets/junkyard.png');
+    },
 
     create: function ()
     {
-      const text = [
-        'You see a SCI-FI JUNKYARD',
-        'filled with PLUCKY SCAVENGERS',
-        'and MYSTERIOUS PODS CONTAINING GIRLS'
-      ]
-      this.add.text(100, 200, text, { fontSize: '16px', fill: '#F0F' });
+      this.add.sprite(450, 360, 'junkyard');
       navMenu(this);
     }
   });
