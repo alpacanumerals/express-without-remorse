@@ -107,9 +107,17 @@
     }
   });
 
-  var bote;
   var cursors;
   var wasd;
+
+  var bote;
+  var hitbox;
+
+  var turrets;
+  var bullets;
+  var lowerBoundSentry;
+
+  var globalspeed = 200;
 
   const TrainScene = new Phaser.Class({
 
@@ -123,12 +131,14 @@
 
     preload: function () {
       this.load.image('bote', 'assets/bote.png');
+      this.load.image('turret', 'assets/star.png');
     },
 
     create: function () {
       navMenu(this);
       bote = this.physics.add.sprite(450, 360, 'bote');
       bote.setCollideWorldBounds(true);
+
       cursors = this.input.keyboard.createCursorKeys();
       wasd = this.input.keyboard.addKeys(
         {up:Phaser.Input.Keyboard.KeyCodes.W,
@@ -136,9 +146,31 @@
         left:Phaser.Input.Keyboard.KeyCodes.A,
         right:Phaser.Input.Keyboard.KeyCodes.D}
       );
+
+      turrets = this.physics.add.group({
+        key: 'turret',
+        repeat: 11,
+        setXY: { x: 50, y: -720, stepY: 120 },
+        collideWorldBounds: false,
+      });
+
+      resetTurret = (sentry, turret) => {
+        turret.setY(-720);
+      }
+
+      lowerBoundSentry = this.physics.add.sprite(50, 720, 'bote');
+      lowerBoundSentry.setImmovable();
+      this.physics.add.collider(turrets, lowerBoundSentry, resetTurret);
+
+      bullets = this.physics.add.group();
+      this.physics.add.collider(bote, bullets);
+
+
     },
 
     update: function () {
+      turrets.setVelocityY(globalspeed);
+
       if (cursors.left.isDown || wasd.left.isDown)
       {
         bote.setVelocityX(-200);
