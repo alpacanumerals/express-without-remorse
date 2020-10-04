@@ -58,6 +58,11 @@
     }
   });
 
+  var maxGlobalSpeed = 200;
+  var maxHp = 0;
+  var tacticalSpeed = 200;
+  var diagonalSpeed = Math.sqrt((tacticalSpeed**2)/2);
+
   const BarScene = new Phaser.Class({
 
     Extends: Phaser.Scene,
@@ -93,6 +98,16 @@
   var sellText;
   var quitText;
   var cashText;
+
+  const upgradeConvo = [
+    "Urgh Shogoth urk ftagn afk credeets!",
+    "(Shogoth have wares if Rider have credits)",
+  ]
+  var upgradeHeaderText;
+  var enginesText;
+  var thrustersText;
+  var shieldsText;
+  var quitShopText;
 
   const JunkScene = new Phaser.Class({
 
@@ -144,18 +159,78 @@
         });
       }
 
+      const buyEngine = () => {
+        const price = 100;
+        if (creditCount >= price){
+          updateMoney(-price);
+          maxGlobalSpeed += 50;
+        }
+      }
+      const buyThruster = () => {
+        const price = 100;
+        if (creditCount >= price){
+          updateMoney(-price);
+          tacticalSpeed += 50;
+        }
+      }
+      const buyShield = () => {
+        const price = 200;
+        if (creditCount >= price){
+          updateMoney(-price);
+          maxHp += 1;
+        }
+      }
+      const quitUpgradeShop = () => {
+        upgradeHeaderText.setText('');
+        enginesText.setText('');
+        thrustersText.setText('');
+        shieldsText.setText('');
+        quitShopText.setText('');
+      }
+      const launchUpgradeShop = () => {
+        upgradeHeaderText.setText(upgradeConvo);
+        enginesText.setText('Buy engines (+speed)').setInteractive();
+        thrustersText.setText('Buy thrusters (+maneuver)').setInteractive();
+        shieldsText.setText('Buy shields (+shields)').setInteractive();
+        quitShopText.setText('QUIT').setInteractive();
+        enginesText.on('pointerup', function (pointer) {
+          buyEngine();
+        });
+        thrustersText.on('pointerup', function (pointer) {
+          buyThruster();
+        });
+        shieldsText.on('pointerup', function (pointer) {
+          buyShield();
+        });
+        quitShopText.on('pointerup', function (pointer) {
+          quitUpgradeShop();
+        });
+      }
+
       this.add.sprite(450, 360, 'junkyard');
       junker = this.add.sprite(675, 275, 'junker').setInteractive();
-      upgrades = this.add.sprite(250, 360, 'upgrades');
       junker.on('pointerup', function (pointer) {
-        console.log('ping');
+        quitUpgradeShop();
         launchJunkShop();
       });
+
+      upgrades = this.add.sprite(250, 360, 'upgrades').setInteractive();
+      upgrades.on('pointerup', function (pointer) {
+        quitJunkShop();
+        launchUpgradeShop();
+      });
+
 
       junkHeaderText = this.add.text(300, 500, '');
       junkText = this.add.text(300, 550, '');
       sellText = this.add.text(300, 575, '').setInteractive();
       quitText = this.add.text(400, 575, '').setInteractive();
+
+      upgradeHeaderText = this.add.text(300, 500, '');
+      enginesText = this.add.text(300, 550, '').setInteractive();;
+      thrustersText = this.add.text(300, 575, '').setInteractive();
+      shieldsText = this.add.text(300, 600, '').setInteractive();
+      quitShopText = this.add.text(300, 625, '').setInteractive();
 
       cashText = this.add.text(700, 75, 'Credits: ' + creditCount);
 
@@ -232,10 +307,7 @@
   var bullets;
   var lowerBoundSentry;
 
-  var maxHp = 3;
   var hp;
-
-  var maxGlobalSpeed = 200;
   var globalSpeed = 100;
 
   const updateGlobalSpeedBullets = () => {
@@ -275,9 +347,6 @@
     bullet.body.reset(10, 10);
     bullet.setActive(false);
   };
-
-  const tacticalSpeed = 200;
-  const diagonalSpeed = Math.sqrt((tacticalSpeed**2)/2);
 
   const updateDistance = (delta) => {
     distance -= delta;
@@ -425,7 +494,7 @@
           bullet.setActive(true);
           bullet.body.enable = true;
           bullet.setVelocityY(globalSpeed);
-          bullet.setVelocityX(100);
+          bullet.setVelocityX(300);
           //bullet.setCircle(3, 11, 14);
           if (bulletIndex < bullets.getChildren().length-1) {
             ++bulletIndex;
