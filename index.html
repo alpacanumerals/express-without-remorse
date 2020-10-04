@@ -116,6 +116,14 @@
 
   var globalspeed = 100;
 
+  var bulletIndex = 0;
+
+  const disableBullet = (bullet) => {
+    bullet.disableBody(true, false);
+    bullet.body.reset(10, 10);
+    bullet.setActive(false);
+  };
+
   const TrainScene = new Phaser.Class({
 
     Extends: Phaser.Scene,
@@ -157,19 +165,51 @@
         turret.setY(-720);
       };
 
-      lowerBoundSentry = this.physics.add.sprite(50, 720, 'bote');
+      lowerBoundSentry = this.physics.add.image(50, 720, 'bote');
       lowerBoundSentry.setImmovable();
       this.physics.add.collider(turrets, lowerBoundSentry, resetTurret);
-      bullets = this.physics.add.group({});
-      // bullets = this.physics.add.group({
-      //   key: 'bullet',
-      //   repeat: 1000,
-      //   setXY: {x: -100, y: -100},
-      //   collideWorldBounds: false
+
+      // bullets = this.physics.add.group({});
+      bullets = this.physics.add.group({
+        key: 'bullet',
+        repeat: 100,
+        setXY: {x: 10, y: 10},
+        collideWorldBounds: false,
+        //customBoundsRectangle: new Phaser.Geom.Rectangle(-100, 820, 900, 1640)
+      });
+      lowerBulletWall = this.physics.add.image(450, 920, 'bote');
+      lowerBulletWall.setImmovable();
+      lowerBulletWall.body.setSize(1100, 100, true);
+
+      upperBulletWall = this.physics.add.image(450, -920, 'bote');
+      upperBulletWall.setImmovable();
+      upperBulletWall.body.setSize(1100, 100, true);
+
+      leftBulletWall = this.physics.add.image(-200, 360, 'bote');
+      leftBulletWall.setImmovable();
+      leftBulletWall.body.setSize(100, 1640, true);
+
+      rightBulletWall = this.physics.add.image(1200, 360, 'bote');
+      rightBulletWall.setImmovable();
+      rightBulletWall.body.setSize(100, 1640, true);
+
+      const hitWall = (wall, bullet) => {
+        disableBullet(bullet);
+      }
+
+      this.physics.add.collider(lowerBulletWall, bullets, hitWall);
+      this.physics.add.collider(upperBulletWall, bullets, hitWall);
+      this.physics.add.collider(leftBulletWall, bullets, hitWall);
+      this.physics.add.collider(rightBulletWall, bullets, hitWall);
+
+      // Phaser.Actions.Call(bullets.getChildren(), function (bullet) {
+      //     bullet.body.onWorldBounds = true;
       // });
+      // this.physics.world.on('worldbounds', disableBulletBody);
+      //bullets.children.disableBody(true, true);
 
       const hit = (bote, bullet) => {
-        bullet.disableBody(true, true);
+        disableBullet(bullet);
       };
       this.physics.add.collider(bote, bullets, hit);
 
@@ -177,10 +217,19 @@
 
       const basicShot = (turret, time) => {
         const shoot = () => {
-          const bullet = bullets.create(turret.x, turret.y, 'bullet');
+          // const bullet = bullets.create(turret.x, turret.y, 'bullet');
+          const bullet = bullets.getChildren()[bulletIndex];
+          bullet.body.reset(turret.x, turret.y);
+          bullet.setActive(true);
+          bullet.body.enable = true;
           bullet.setVelocityY(globalspeed);
           bullet.setVelocityX(100);
           //bullet.setCircle(3, 11, 14);
+          if (bulletIndex < bullets.getChildren().length-1) {
+            ++bulletIndex;
+          } else {
+            bulletIndex = 0;
+          }
         }
         if (time > turret.shotTimer) {
           shoot();
@@ -199,6 +248,15 @@
       turrets.setVelocityY(globalspeed);
 
       turrets.children.iterate((turret) => turret.shootBehaviour(turret, time))
+
+      if (
+        bullets.x > 1000
+        || bullets.x < -100
+        || bullets.y > 820
+        || bullets.y < -820
+      ) {
+        disable
+      }
 
       if (cursors.left.isDown || wasd.left.isDown)
       {
@@ -235,7 +293,7 @@
       default: 'arcade',
       arcade: {
         gravity: { y: 0 },
-        debug: true,
+        debug: false,
       }},
     scene: [StationScene, BarScene, JunkScene, TrainScene]
   };
