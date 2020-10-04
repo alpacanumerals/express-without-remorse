@@ -126,6 +126,65 @@
     bullet.setActive(false);
   };
 
+  const tacticalSpeed = 200;
+  const diagonalSpeed = Math.sqrt((tacticalSpeed**2)/2);
+
+  const evaluateKeys = () => {
+    if (cursors.left.isDown || wasd.left.isDown)
+    {
+      if (cursors.up.isDown || wasd.up.isDown)
+      {
+        bote.setVelocityX(-diagonalSpeed);
+        bote.setVelocityY(-diagonalSpeed);
+      }
+      else if (cursors.down.isDown || wasd.down.isDown)
+      {
+        bote.setVelocityX(-diagonalSpeed);
+        bote.setVelocityY(diagonalSpeed);
+      }
+      else
+      {
+        bote.setVelocityX(-tacticalSpeed);
+        bote.setVelocityY(0);
+      }
+    }
+    else if (cursors.right.isDown || wasd.right.isDown)
+    {
+      if (cursors.up.isDown || wasd.up.isDown)
+      {
+        bote.setVelocityX(diagonalSpeed);
+        bote.setVelocityY(-diagonalSpeed);
+      }
+      else if (cursors.down.isDown || wasd.down.isDown)
+      {
+        bote.setVelocityX(diagonalSpeed);
+        bote.setVelocityY(diagonalSpeed);
+      }
+      else
+      {
+        bote.setVelocityX(tacticalSpeed);
+        bote.setVelocityY(0);
+      }
+    }
+    else {
+      if (cursors.up.isDown || wasd.up.isDown)
+      {
+        bote.setVelocityX(0);
+        bote.setVelocityY(-tacticalSpeed);
+      }
+      else if (cursors.down.isDown || wasd.down.isDown)
+      {
+        bote.setVelocityX(0);
+        bote.setVelocityY(tacticalSpeed);
+      }
+      else
+      {
+        bote.setVelocityX(0);
+        bote.setVelocityY(0);
+      }
+    }
+  }
+
   const TrainScene = new Phaser.Class({
 
     Extends: Phaser.Scene,
@@ -147,6 +206,7 @@
       bote = this.physics.add.sprite(450, 360, 'bote');
       bote.setCollideWorldBounds(true);
       bote.setCircle(3, 11, 14);
+      bote.setImmovable();
 
       hp = maxHp;
 
@@ -257,39 +317,7 @@
 
       turrets.children.iterate((turret) => turret.shootBehaviour(turret, time))
 
-      if (
-        bullets.x > 1000
-        || bullets.x < -100
-        || bullets.y > 820
-        || bullets.y < -820
-      ) {
-        disable
-      }
-
-      if (cursors.left.isDown || wasd.left.isDown)
-      {
-        bote.setVelocityX(-200);
-      }
-      else if (cursors.right.isDown || wasd.right.isDown)
-      {
-        bote.setVelocityX(200);
-      }
-      else
-      {
-        bote.setVelocityX(0);
-      }
-      if (cursors.up.isDown || wasd.up.isDown)
-      {
-        bote.setVelocityY(-200);
-      }
-      else if (cursors.down.isDown || wasd.down.isDown)
-      {
-        bote.setVelocityY(200);
-      }
-      else
-      {
-        bote.setVelocityY(0);
-      }
+      evaluateKeys();
     }
   });
 
