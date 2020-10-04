@@ -81,6 +81,19 @@
     }
   });
 
+  var junkCount = 5;
+  var creditCount = 0;
+
+  const junkConvo1 = [
+    "Riding junk off the New Resurrection Loop?",
+    "Watch you don't get yourself killed.",
+  ]
+  var junkHeaderText;
+  var junkText;
+  var sellText;
+  var quitText;
+  var cashText;
+
   const JunkScene = new Phaser.Class({
 
     Extends: Phaser.Scene,
@@ -95,11 +108,57 @@
     preload: function ()
     {
       this.load.image('junkyard', 'assets/junkyard.png');
+      this.load.image('junker', 'assets/ppl-junk-junker.png');
+      this.load.image('upgrades', 'assets/ppl-junk-upgrades.png');
     },
 
     create: function ()
     {
+
+      const updateMoney = (credits) => {
+        creditCount += credits;
+        cashText.setText('Credits: ' + creditCount);
+      }
+      const sellJunk = () => {
+        updateMoney(junkCount*100);
+        junkCount = 0;
+        junkText.setText('Junk: ' + junkCount);
+      }
+
+      const quitJunkShop = () => {
+        junkHeaderText.setText('');
+        junkText.setText('');
+        sellText.setText('');
+        quitText.setText('');
+      }
+      const launchJunkShop = () => {
+        junkHeaderText.setText(junkConvo1);
+        junkText.setText('Junk: ' + junkCount);
+        sellText.setText('SELL');
+        quitText.setText('QUIT');
+        sellText.on('pointerup', function (pointer) {
+          sellJunk();
+        });
+        quitText.on('pointerup', function (pointer) {
+          quitJunkShop();
+        });
+      }
+
       this.add.sprite(450, 360, 'junkyard');
+      junker = this.add.sprite(675, 275, 'junker').setInteractive();
+      upgrades = this.add.sprite(250, 360, 'upgrades');
+      junker.on('pointerup', function (pointer) {
+        console.log('ping');
+        launchJunkShop();
+      });
+
+      junkHeaderText = this.add.text(300, 500, '');
+      junkText = this.add.text(300, 550, '');
+      sellText = this.add.text(300, 575, '').setInteractive();
+      quitText = this.add.text(400, 575, '').setInteractive();
+
+      cashText = this.add.text(700, 75, 'Credits: ' + creditCount);
+
       navMenu(this);
     }
   });
@@ -193,7 +252,7 @@
     if (0 <= newGlobalSpeed && newGlobalSpeed <= maxGlobalSpeed) {
       globalSpeed = newGlobalSpeed;
       updateGlobalSpeedBullets();
-      speedText.setText('speed: ' + globalSpeed);
+      speedText.setText('speed: ' + globalSpeed + '/' + maxGlobalSpeed);
     }
   }
 
@@ -254,7 +313,7 @@
 
       distanceText = this.add.text(700, 75, 'distance: ' + distance);
       timeText = this.add.text(700, 100, 'time limit: ' + timeRemaining);
-      speedText = this.add.text(700, 125, 'speed: ' + globalSpeed);
+      speedText = this.add.text(700, 125, 'speed: ' + globalSpeed + '/' + maxGlobalSpeed);
 
       const time = new Date().getTime();
       navMenu(this);
