@@ -114,6 +114,8 @@
   var bullets;
   var lowerBoundSentry;
 
+  var maxHp = 3;
+  var hp;
   var globalspeed = 100;
 
   var bulletIndex = 0;
@@ -146,6 +148,12 @@
       bote.setCollideWorldBounds(true);
       bote.setCircle(3, 11, 14);
 
+      hp = maxHp;
+
+      var shieldText = 'shields: ' + hp;
+
+      this.add.text(700, 50, shieldText);
+
       cursors = this.input.keyboard.createCursorKeys();
       wasd = this.input.keyboard.addKeys(
         {up:Phaser.Input.Keyboard.KeyCodes.W,
@@ -172,7 +180,7 @@
       // bullets = this.physics.add.group({});
       bullets = this.physics.add.group({
         key: 'bullet',
-        repeat: 100,
+        repeat: 1000,
         setXY: {x: 10, y: 10},
         collideWorldBounds: false,
         //customBoundsRectangle: new Phaser.Geom.Rectangle(-100, 820, 900, 1640)
