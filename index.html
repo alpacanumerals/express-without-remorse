@@ -174,10 +174,15 @@
   var hp;
   var globalspeed = 100;
   var globalTime;
-
   const getGlobalTime = () => globalTime;
 
+  var distance;
+  var timeRemaining;
+
   var shieldText;
+  var distanceText;
+  var timeText;
+  var speedText;
 
   var bulletIndex = 0;
   var bulletCollider;
@@ -190,6 +195,11 @@
 
   const tacticalSpeed = 200;
   const diagonalSpeed = Math.sqrt((tacticalSpeed**2)/2);
+
+  const updateDistanceText = (delta) => {
+    distance -= delta;
+    distanceText.setText('distance: ' + Math.ceil(distance));
+  }
 
   const TrainScene = new Phaser.Class({
 
@@ -208,6 +218,11 @@
     },
 
     create: function () {
+      distance = 50000;
+      timeRemaining = 15000;
+
+      distanceText = this.add.text(700, 75, 'distance: ' + distance);
+
       const time = new Date().getTime();
       navMenu(this);
 
@@ -321,10 +336,12 @@
       turrets.children.iterate((turret) => turret.shootBehaviour = basicShot);
     },
 
-    update: function () {
+    update: function (gameTime, delta) {
 
       const time = new Date().getTime();
       globalTime = new Date().getTime();
+
+      updateDistanceText(delta/1000);
 
       turrets.setVelocityY(globalspeed);
 
