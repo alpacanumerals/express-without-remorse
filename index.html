@@ -558,6 +558,7 @@
       this.load.image('bote', 'assets/bote.png');
       this.load.image('turret', 'assets/bote.png');
       this.load.image('bullet', 'assets/bullet1.png');
+      this.load.image('bullet2', 'assets/bullet2.png');
       this.load.image('yline', 'assets/yline.png');
       this.load.image('sidebar', 'assets/sidebar.png');
       this.load.image('spark', 'assets/prt.png');
@@ -696,6 +697,7 @@
       const basicShot = (turret, time) => {
         const shoot = () => {
           const bullet = bullets.getChildren()[bulletIndex];
+          bullet.setTexture('bullet');
           bullet.body.reset(turret.x, turret.y);
           bullet.setActive(true);
           bullet.body.enable = true;
@@ -720,6 +722,7 @@
         };
         const shoot = () => {
           const bullet = bullets.getChildren()[bulletIndex];
+          bullet.setTexture('bullet2')
           bullet.body.reset(turret.x, turret.y);
           bullet.setActive(true);
           bullet.body.enable = true;
@@ -853,7 +856,7 @@
       default: 'arcade',
       arcade: {
         gravity: { y: 0 },
-        debug: false,
+        debug: true,
       }},
     scene: [TrainScene, StationScene, BarScene, JunkScene]
   };
