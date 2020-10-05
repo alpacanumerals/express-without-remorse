@@ -220,7 +220,7 @@
   });
 
   var maxGlobalSpeed = 200;
-  var maxHp = 10;
+  var maxHp = 1;
   var tacticalSpeed = 200;
   var diagonalSpeed = Math.sqrt((tacticalSpeed**2)/2);
 
@@ -395,6 +395,11 @@
   var throttleDown;
 
   const evaluateKeys = () => {
+    if (shotDown) {
+      bote.setVelocityX(0);
+      bote.setVelocityY(0);
+      return;
+    }
     if (wasd.left.isDown)
     {
       if (wasd.up.isDown)
@@ -510,16 +515,26 @@
 
   var failText;
   var missedTrain = false;
+  var shotDown = false;
+  var killTime;
+
   var missedTrainText = [
     "TRAIN DEPARTING",
     "PLEASE MIND THE CLOSING DOORS",
   ];
+  // var shotDownText = [
+  //   "CUSTOMER FALLEN ON PLATFORM",
+  //   "PLEASE SEEK EMERGENCY ASSISTANCE",
+  // ];
+  var shotDownText = [""];
   var failureStyle = {
     align: 'center',
     fontSize: '32px',
     //fontFamily: 'Arial',
     color: '#ff0000',
     };
+
+  var particles;
 
   const TrainScene = new Phaser.Class({
 
@@ -537,11 +552,12 @@
       this.load.image('bullet', 'assets/bullet1.png');
       this.load.image('yline', 'assets/yline.png');
       this.load.image('sidebar', 'assets/sidebar.png');
+      this.load.image('spark', 'assets/prt.png');
     },
 
     create: function () {
       distance = 50000;
-      timeRemaining = 10;
+      timeRemaining = 30;
 
       globalSpeed = 100;
 
@@ -564,13 +580,15 @@
         down: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN),
       };
 
-      throttleUp = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
-      throttleDown = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
       throttle.up.on('down', function (key, event) {
-        changeGlobalSpeed(10);
+        if (!shotDown) {
+          changeGlobalSpeed(10);
+        }
       });
       throttle.down.on('down', function (key, event) {
-        changeGlobalSpeed(-10);
+        if (!shotDown) {
+          changeGlobalSpeed(-10);
+        }
       });
 
       yellowLine = this.physics.add.sprite(540, -100, 'yline');
@@ -687,6 +705,8 @@
       turrets.children.iterate((turret) => turret.shotTimer = time + 10000 + Phaser.Math.Between(0, 2000));
       turrets.children.iterate((turret) => turret.shootBehaviour = basicShot);
 
+      particles = this.add.particles('spark');
+
       failText = this.add.text(450, 360, '', failureStyle);
 
       this.add.image(90,360,'sidebar');
@@ -708,26 +728,46 @@
 
       evaluateKeys();
 
-      if (bote.invuln && bote.invulnExpire < globalTime) {
+      if (bote.invuln && bote.invulnExpire < globalTime && !shotDown) {
         bote.invuln = false;
         bote.clearTint();
         this.physics.world.colliders.add(bulletCollider);
       }
 
+      const setAlert = (text) => {
+        failText.setText(text);
+        const centre = failText.getCenter();
+        failText.setPosition(990-centre.x, 720-centre.y);
+      }
+
       // lose condition
       if (hp < 0) {
-        // if (!blownUp) {
-        //   bote.
-        // }
-        this.scene.start('StationScene');
+        if (!shotDown) {
+          killTime = globalTime;
+          setAlert(shotDownText);
+          shotDown = true;
+
+          const botePos = bote.getCenter();
+          var emitter = particles.createEmitter({
+            x: botePos.x,
+            y: botePos.y,
+            speed: 50,
+            quantity: 0.01,
+            scale: { start: 0.1, end: 0.2 },
+          });
+
+          emitter.setSpeed(50);
+          emitter.setBlendMode(Phaser.BlendModes.ADD);
+        }
+        if (globalTime > killTime + 5000) {
+          this.scene.start('StationScene');
+        }
       }
 
       // lose condition
       if (timeRemaining < 0) {
         if (!missedTrain) {
-          failText.setText(missedTrainText);
-          const centre = failText.getCenter();
-          failText.setPosition(990-centre.x, 720-centre.y);
+          setAlert(missedTrainText);
           missedTrain = true;
         }
         --globalSpeed;
