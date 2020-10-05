@@ -202,10 +202,10 @@
       const barmaidText = 
        ["Care to try our Perpetual Stew?",
 	"This station may have been cut off",
-        "a few years but our Perpetual Stew",
-        "has been cooking on two centuries.",
-        "It'll be decades before it loses its",
-        "complex otherworld flavours!"]
+        "but our Perpetual Stew has been",
+        "cooking for almost two centuries.",
+        "It'll be decades before it loses",
+        "its complex otherworld flavours!"]
 
       const podGirlText = 
        ["...",
@@ -240,7 +240,7 @@
         });
   	  this.add.sprite(717, 491, 'maid').setInteractive()
         .on('pointerup', function (pointer) {
-          showBarText(580, 250, barmaidText);
+          showBarText(500, 248, barmaidText);
         });
 
       if (podGirlAppears) {
