@@ -51,18 +51,18 @@
       this.load.image('map1', 'assets/smap1.png');
       this.load.image('map2', 'assets/smap2.png');
       this.load.image('map3', 'assets/smap3.png');
-	  this.load.image('departuresbig', 'assets/departuresbig.png');
-	  this.load.image('loiterer', 'assets/ppl-loiter.png');
-	  this.load.image('departures', 'assets/departures.png');
-	  this.load.image('alienmap', 'assets/alienmap.png');
+  	  this.load.image('departuresbig', 'assets/departuresbig.png');
+  	  this.load.image('loiterer', 'assets/ppl-loiter.png');
+  	  this.load.image('departures', 'assets/departures.png');
+  	  this.load.image('alienmap', 'assets/alienmap.png');
     },
 
     create: function ()
     {
       this.add.sprite(450, 360, 'platform');
-      this.add.sprite(622, 254, 'loiterer');	  
-      this.add.sprite(825, 85, 'departures');	  
-      this.add.sprite(105, 85, 'alienmap');	  
+      this.add.sprite(622, 254, 'loiterer');
+      this.add.sprite(825, 85, 'departures');
+      this.add.sprite(105, 85, 'alienmap');
 	  //REFUGE FOUND
       navMenu(this);
     }
@@ -89,30 +89,30 @@
     preload: function ()
     {
       this.load.image('bar', 'assets/spacebar.png');
-	  this.load.image('patron1', 'assets/ppl-bar1.png');
+	    this.load.image('patron1', 'assets/ppl-bar1.png');
       this.load.image('patron2', 'assets/ppl-bar2.png');
-	  this.load.image('patron3', 'assets/ppl-bar3.png');
+	    this.load.image('patron3', 'assets/ppl-bar3.png');
       this.load.image('patron4', 'assets/ppl-bar4.png');
-	  this.load.image('patron5', 'assets/ppl-bar5.png');
+	    this.load.image('patron5', 'assets/ppl-bar5.png');
       this.load.image('patron6', 'assets/ppl-bar6.png');
-	  this.load.image('podg', 'assets/ppl-pod.png');
-	  this.load.image('maid', 'assets/ppl-maid.png');
+	    this.load.image('podg', 'assets/ppl-pod.png');
+	    this.load.image('maid', 'assets/ppl-maid.png');
     },
 
     create: function ()
     {
       this.add.sprite(450, 360, 'bar');
-	  
-	  this.add.sprite(415, 390, 'patron1');
-	  this.add.sprite(545, 375, 'patron2');
-	  this.add.sprite(185, 570, 'patron3');
-	  this.add.sprite(340, 585, 'patron4');
-	  this.add.sprite(285, 355, 'patron5');
-	  this.add.sprite(350, 200, 'patron6');
-	  this.add.sprite(717, 491, 'maid');	  
-	//Should only appear after finding the pod.
-	  this.add.sprite(655, 206, 'podg');	  
-	  
+
+  	  this.add.sprite(415, 390, 'patron1');
+  	  this.add.sprite(545, 375, 'patron2');
+  	  this.add.sprite(185, 570, 'patron3');
+  	  this.add.sprite(340, 585, 'patron4');
+  	  this.add.sprite(285, 355, 'patron5');
+  	  this.add.sprite(350, 200, 'patron6');
+  	  this.add.sprite(717, 491, 'maid');
+  	   //Should only appear after finding the pod.
+  	  this.add.sprite(655, 206, 'podg');
+
       navMenu(this);
     }
   });
