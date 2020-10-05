@@ -203,7 +203,7 @@
 
       const patron2Text =
        ["Ever since the switch, this",
-        "station's been cut right off.",
+        "station's been cut off.",
         "The local lines are still",
         "rideable but they're mostly",
         "crappy backwaters.",
@@ -242,12 +242,12 @@
       const barmaidText =
        ["Care to try our Perpetual Stew?",
 	"This station may have been cut off",
-        "a few years but our Perpetual Stew",
-        "has been cooking on two centuries.",
-        "It'll be decades before it loses its",
-        "complex otherworld flavours!"]
+        "but our Perpetual Stew has been",
+        "cooking for almost two centuries.",
+        "It'll be decades before it loses",
+        "its complex otherworld flavours!"]
 
-      const podGirlText =
+      const podGirlText = 
        ["...",
 	"",
         "(She doesn't speak the language but it looks",
@@ -255,20 +255,20 @@
 
   	  this.add.sprite(415, 385, 'patron1').setInteractive()
         .on('pointerup', function (pointer) {
-          showBarText(115, 425, patron1Text);
+          showBarText(115, 430, patron1Text);
           captainPlotFlag = 1;
         });
   	  this.add.sprite(545, 375, 'patron2').setInteractive()
         .on('pointerup', function (pointer) {
-          showBarText(555, 275, patron2Text);
+          showBarText(560, 275, patron2Text);
         });
   	  this.add.sprite(185, 570, 'patron3').setInteractive()
         .on('pointerup', function (pointer) {
-          showBarText(75, 415, patron3Text);
+          showBarText(75, 435, patron3Text);
         });
   	  this.add.sprite(340, 585, 'patron4').setInteractive()
         .on('pointerup', function (pointer) {
-          showBarText(175, 644, patron4Text);
+          showBarText(175, 639, patron4Text);
         });
   	  this.add.sprite(285, 355, 'patron5').setInteractive()
         .on('pointerup', function (pointer) {
@@ -276,11 +276,11 @@
         });
   	  this.add.sprite(350, 200, 'patron6').setInteractive()
         .on('pointerup', function (pointer) {
-          showBarText(75, 255, patron6Text);
+          showBarText(75, 250, patron6Text);
         });
   	  this.add.sprite(717, 491, 'maid').setInteractive()
         .on('pointerup', function (pointer) {
-          showBarText(540, 290, barmaidText);
+          showBarText(500, 248, barmaidText);
         });
 
       if (podGirlAppears) {
@@ -676,7 +676,6 @@
       const time = new Date().getTime();
 
       // cursors = this.input.keyboard.createCursorKeys();
-      this.input.keyboard.removeAllKeys(true);
       wasd = this.input.keyboard.addKeys({
         up: Phaser.Input.Keyboard.KeyCodes.W,
         down: Phaser.Input.Keyboard.KeyCodes.S,
