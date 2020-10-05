@@ -52,10 +52,10 @@
       this.load.image('map1', 'assets/smap1.png');
       this.load.image('map2', 'assets/smap2.png');
       this.load.image('map3', 'assets/smap3.png');
-  	  this.load.image('departuresbig', 'assets/departuresbig.png');
-  	  this.load.image('loiterer', 'assets/ppl-loiterer.png');
-  	  this.load.image('departures', 'assets/departures.png');
-  	  this.load.image('alienmap', 'assets/alienmap.png');
+      this.load.image('departuresbig', 'assets/departuresbig.png');
+      this.load.spritesheet('loiterer', 'assets/ppl-loiterer.png', 40, 80, 2)
+      this.load.image('departures', 'assets/departures.png');
+      this.load.image('alienmap', 'assets/alienmap.png');
     },
 
     create: function ()
@@ -82,6 +82,8 @@
         .on('pointerup', function (pointer) {
           stationText.setText(loiterText);
         });
+      loiterer.animations.add('bob')
+      loiterer.animations.play('bob', 2, true);
       this.add.sprite(825, 85, 'departures');
       this.add.sprite(105, 85, 'alienmap');
 
@@ -113,14 +115,14 @@
     preload: function ()
     {
       this.load.image('bar', 'assets/spacebar.png');
-	    this.load.image('patron1', 'assets/ppl-bar1.png');
+      this.load.image('patron1', 'assets/ppl-bar1.png');
       this.load.image('patron2', 'assets/ppl-bar2.png');
-	    this.load.image('patron3', 'assets/ppl-bar3.png');
+      this.load.image('patron3', 'assets/ppl-bar3.png');
       this.load.image('patron4', 'assets/ppl-bar4.png');
-	    this.load.image('patron5', 'assets/ppl-bar5.png');
+      this.load.image('patron5', 'assets/ppl-bar5.png');
       this.load.image('patron6', 'assets/ppl-bar6.png');
-	    this.load.image('podg', 'assets/ppl-pod.png');
-	    this.load.image('maid', 'assets/ppl-maid.png');
+      this.load.image('podg', 'assets/ppl-pod.png');
+      this.load.image('maid', 'assets/ppl-maid.png');
     },
 
     create: function ()
