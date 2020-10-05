@@ -215,7 +215,7 @@
   });
 
   var maxGlobalSpeed = 200;
-  var maxHp = 0;
+  var maxHp = 10;
   var tacticalSpeed = 200;
   var diagonalSpeed = Math.sqrt((tacticalSpeed**2)/2);
 
@@ -496,12 +496,25 @@
   const updateDistance = (delta) => {
     distance -= delta;
     distanceText.setText('distance: ' + Math.ceil(distance));
-  }
+  };
 
   const updateTimeRemaining = (delta) => {
     timeRemaining -= delta;
     timeText.setText('time limit: ' + Math.ceil(timeRemaining));
-  }
+  };
+
+  var failText;
+  var missedTrain = false;
+  var missedTrainText = [
+    "TRAIN DEPARTING",
+    "PLEASE MIND THE CLOSING DOORS",
+  ];
+  var failureStyle = {
+    align: 'center',
+    fontSize: '32px',
+    //fontFamily: 'Arial',
+    color: '#ff0000',
+    };
 
   const TrainScene = new Phaser.Class({
 
@@ -517,11 +530,13 @@
       this.load.image('bote', 'assets/bote.png');
       this.load.image('turret', 'assets/bote.png');
       this.load.image('bullet', 'assets/bullet1.png');
+      this.load.image('yline', 'assets/yline.png');
+      this.load.image('sidebar', 'assets/sidebar.png');
     },
 
     create: function () {
       distance = 50000;
-      timeRemaining = 15;
+      timeRemaining = 10;
 
       globalSpeed = 100;
 
@@ -530,7 +545,6 @@
       speedText = this.add.text(700, 125, 'speed: ' + globalSpeed + '/' + maxGlobalSpeed);
 
       const time = new Date().getTime();
-      navMenu(this);
 
       // cursors = this.input.keyboard.createCursorKeys();
       wasd = this.input.keyboard.addKeys({
@@ -554,7 +568,10 @@
         changeGlobalSpeed(-10);
       });
 
-      bote = this.physics.add.sprite(450, 360, 'bote');
+      yellowLine = this.physics.add.sprite(540, -100, 'yline');
+      yellowLine.setVelocityY(100);
+
+      bote = this.physics.add.sprite(540, 360, 'bote');
       bote.setCollideWorldBounds(true);
       bote.setCircle(3, 11, 14);
       bote.setImmovable();
@@ -591,9 +608,17 @@
         turret.setY(-720);
       };
 
-      lowerBoundSentry = this.physics.add.image(50, 720, 'bote');
+      const resetTurretUp = (sentry, turret) => {
+        turret.setY(720);
+      };
+
+      lowerBoundSentry = this.physics.add.image(50, 750, 'bote');
       lowerBoundSentry.setImmovable();
       this.physics.add.collider(turrets, lowerBoundSentry, resetTurret);
+
+      upperBoundSentry = this.physics.add.image(50, -750, 'bote');
+      upperBoundSentry.setImmovable();
+      this.physics.add.collider(turrets, upperBoundSentry, resetTurretUp);
 
       bullets = this.physics.add.group({
         key: 'bullet',
@@ -649,11 +674,19 @@
         }
         if (time > turret.shotTimer) {
           shoot();
-          turret.shotTimer = time + Phaser.Math.Between(500, 5000);
+          turret.shotTimer = time + Phaser.Math.Between(500, 2000);
         }
       };
-      turrets.children.iterate((turret) => turret.shotTimer = time + Phaser.Math.Between(0, 5000));
+      const trackerShot = (turret, time) => {};
+      const beamShot = (turret, time) => {};
+      turrets.children.iterate((turret) => turret.shotTimer = time + 10000 + Phaser.Math.Between(0, 2000));
       turrets.children.iterate((turret) => turret.shootBehaviour = basicShot);
+
+      failText = this.add.text(450, 360, '', failureStyle);
+
+      this.add.image(90,360,'sidebar');
+      this.physics.world.setBounds(180, 0, 720, 720);
+      navMenu(this);
     },
 
     update: function (gameTime, delta) {
@@ -676,18 +709,30 @@
         this.physics.world.colliders.add(bulletCollider);
       }
 
+      // lose condition
       if (hp < 0) {
-        // lose condition
+        // if (!blownUp) {
+        //   bote.
+        // }
         this.scene.start('StationScene');
       }
 
+      // lose condition
       if (timeRemaining < 0) {
-        // lose condition
-        this.scene.start('StationScene');
+        if (!missedTrain) {
+          failText.setText(missedTrainText);
+          const centre = failText.getCenter();
+          failText.setPosition(990-centre.x, 720-centre.y);
+          missedTrain = true;
+        }
+        --globalSpeed;
+        if (globalSpeed < -500) {
+          this.scene.start('StationScene');
+        }
       }
 
+      // win condition
       if (distance < 0) {
-        // win condition
         this.scene.start('StationScene');
       }
     }
