@@ -496,6 +496,11 @@
         bullet.setVelocityY(globalSpeed);
       }
     })
+    junk.getChildren().forEach((piece) => {
+      if (piece.active) {
+        piece.setVelocityY(globalSpeed + piece.speedOffset);
+      }
+    })
   }
   const changeGlobalSpeed = (delta) => {
     const newGlobalSpeed = globalSpeed + delta;
@@ -517,9 +522,13 @@
   var distanceText;
   var timeText;
   var speedText;
+  var junkText;
 
   var bulletIndex = 0;
   var bulletCollider;
+
+  var junkIndex = 0;
+  var junkCollider;
 
   const disableBullet = (bullet) => {
     bullet.disableBody(true, false);
@@ -566,6 +575,11 @@
   var stage2shooting;
   var stage3shooting;
 
+  var stage0junk;
+  var stage1junk;
+  var stage2junk;
+  var stage3junk;
+
   var stage1start;
   var stage1end;
   var stage2start;
@@ -589,6 +603,10 @@
       this.load.image('yline', 'assets/yline.png');
       this.load.image('sidebar', 'assets/sidebar.png');
       this.load.image('spark', 'assets/prt.png');
+      this.load.image('junk1', 'assets/junk1.png');
+      this.load.image('junk2', 'assets/junk2.png');
+      this.load.image('junk3', 'assets/junk3.png');
+      this.load.image('junk4', 'assets/junk4.png');
     },
 
     create: function () {
@@ -600,10 +618,6 @@
       timeRemaining = 120;
 
       globalSpeed = 100;
-
-      distanceText = this.add.text(700, 75, 'distance: ' + distance);
-      timeText = this.add.text(700, 100, 'time limit: ' + timeRemaining);
-      speedText = this.add.text(700, 125, 'speed: ' + globalSpeed + '/' + maxGlobalSpeed);
 
       const time = new Date().getTime();
 
@@ -622,12 +636,12 @@
 
       throttle.up.on('down', function (key, event) {
         if (!shotDown) {
-          changeGlobalSpeed(10);
+          changeGlobalSpeed(50);
         }
       });
       throttle.down.on('down', function (key, event) {
         if (!shotDown) {
-          changeGlobalSpeed(-10);
+          changeGlobalSpeed(-50);
         }
       });
 
@@ -670,11 +684,13 @@
 
       const resetTurret = (sentry, turret) => {
         turret.shootBehaviour = currentShooting;
+        turret.junkBehaviour = currentJunk;
         turret.setY(-720);
       };
 
       const resetTurretUp = (sentry, turret) => {
         turret.shootBehaviour = currentShooting;
+        turret.junkBehaviour = currentJunk;
         turret.setY(720);
       };
 
@@ -688,7 +704,7 @@
 
       bullets = this.physics.add.group({
         key: 'bullet',
-        repeat: 1000,
+        repeat: 900,
         setXY: {x: 10, y: 10},
         collideWorldBounds: false,
       });
@@ -722,11 +738,39 @@
       this.physics.add.collider(leftBulletWall, bullets, hitWall);
       this.physics.add.collider(rightBulletWall, bullets, hitWall);
 
+      junk = this.physics.add.group({
+        key: 'junk1',
+        repeat: 100,
+        setXY: {x: 10, y: 10},
+        collideWorldBounds: false,
+      });
+      junk.children.iterate((piece) => {
+        piece.disableBody(true, false);
+        piece.setActive(false);
+        piece.updateBehaviour = () => {};
+        piece.speedOffset = 0;
+      })
+
+      this.physics.add.collider(lowerBulletWall, junk, hitWall);
+      this.physics.add.collider(upperBulletWall, junk, hitWall);
+      this.physics.add.collider(leftBulletWall, junk, hitWall);
+      this.physics.add.collider(rightBulletWall, junk, hitWall);
+
       const hit = (ship, bullet) => {
         disableBullet(bullet);
         hitBote(ship);
       };
       bulletCollider = this.physics.add.collider(bote, bullets, hit);
+
+      const incrementJunk = () => {
+        junkCount++;
+        junkText.setText('Junk: ' + junkCount);
+      }
+      const collectJunk = (ship, piece) => {
+        disableBullet(piece);
+        incrementJunk();
+      };
+      junkCollider = this.physics.add.collider(bote, junk, collectJunk);
 
       const basicShot = (turret, time) => {
         const shoot = () => {
@@ -806,15 +850,56 @@
       turrets.children.iterate((turret) => turret.shotTimer = time + Phaser.Math.Between(0, 2000));
       turrets.children.iterate((turret) => turret.shootBehaviour = noShot);
 
+      const basicJunk = (turret, time) => {
+        const shoot = () => {
+          const piece = junk.getChildren()[junkIndex];
+          piece.enableBody();
+          piece.setTexture('junk1');
+          piece.body.reset(turret.x, turret.y);
+          piece.setActive(true);
+          piece.body.enable = true;
+          piece.speedOffset = Phaser.Math.Between(-50, 50);
+          piece.setVelocityY(globalSpeed + piece.speedOffset);
+          piece.setVelocityX(Phaser.Math.Between(100, 400));
+          if (junkIndex < junk.getChildren().length-1) {
+            ++junkIndex;
+          } else {
+            junkIndex = 0;
+          }
+        };
+        if (time > turret.junkTimer) {
+          shoot();
+          turret.junkTimer = time + Phaser.Math.Between(5000, 10000);
+        };
+      }
+      const noJunk = (turret, time) => {
+        const shoot = () => {}
+        if (time > turret.junkTimer) {
+          shoot();
+          turret.junkTimer = time + Phaser.Math.Between(5000, 10000);
+        };
+      }
+      turrets.children.iterate((turret) => turret.junkTimer = time + Phaser.Math.Between(0, 2000));
+      turrets.children.iterate((turret) => turret.junkBehaviour = noJunk);
+
       stage0shooting = noShot;
       stage1shooting = basicShot;
       stage2shooting = trackingShot;
+
+      stage0junk = noJunk;
+      stage1junk = basicJunk;
+      stage2junk = basicJunk;
 
       currentShooting = stage0shooting;
 
       particles = this.add.particles('spark');
 
       failText = this.add.text(450, 360, '', failureStyle);
+
+      distanceText = this.add.text(700, 75, 'distance: ' + distance);
+      timeText = this.add.text(700, 100, 'time limit: ' + timeRemaining);
+      speedText = this.add.text(700, 125, 'speed: ' + globalSpeed + '/' + maxGlobalSpeed);
+      junkText = this.add.text(700, 150, 'junk: ' + junkCount);
 
       this.add.image(90,360,'sidebar');
       this.physics.world.setBounds(180, 0, 720, 720);
@@ -831,17 +916,22 @@
 
       if (distance > stage1start) {
         currentShooting = stage0shooting;
+        currentJunk = stage0junk;
       } else {
         if (distance > stage1end) {
           currentShooting = stage1shooting;
+          currentJunk = stage1junk;
         } else {
           if (distance > stage2start) {
             currentShooting = stage0shooting;
+            currentJunk = stage0junk;
           } else {
             if (distance > stage2end) {
               currentShooting = stage2shooting;
+              currentJunk = stage2junk;
             } else {
               currentShooting = stage0shooting;
+              currentJunk = stage0junk;
             }
           }
         }
@@ -851,11 +941,14 @@
         if (bullet.body.enable = true) {
           bullet.updateBehaviour();
         }
-      })
+      });
 
       turrets.setVelocityY(globalSpeed);
 
-      turrets.children.iterate((turret) => turret.shootBehaviour(turret, globalTime))
+      turrets.children.iterate((turret) => {
+        turret.shootBehaviour(turret, globalTime);
+        turret.junkBehaviour(turret, globalTime);
+      });
 
       evaluateKeys();
 
