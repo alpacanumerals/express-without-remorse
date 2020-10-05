@@ -156,52 +156,64 @@
         barText.setPosition(x, y);
       }
 
-      const patron1Text = ["I hear the Old Captain at the Junkyard rode",
-        "the New Resurrection here just after the switch.",
-        "He doesn't look like it but he must be a hell of a Rider."];
+      const patron1Text = 
+       ["I hear the Old Captain at the Junkyard rode the",
+        "New Resurrection Loop here just after the switch.",
+        "Doesn't look like it but he must be a hell of a Rider."];
 
-      const patron2Text = ["Ever since the switch, this",
-        "station has been cut right off.",
-        "At least the local lines are still",
-        "rideable but they don't lead to",
-        "nothing but crappy backwaters.",
+      const patron2Text = 
+       ["Ever since the switch, this",
+        "station's been cut right off.",
+        "The local lines are still",
+        "rideable but they're mostly",
+        "crappy backwaters.",
         "You can make okay money off",
-        "running them though, and it's",
-        "not too dangerous."];
+        "running them though, and",
+        "they're not too dangerous."];
 
-      const patron3Text = ["Ever since the switch, the Resurrection Loop",
-        "carriages have been ejecting Weird Junk. That's",
-        "normally how Riders disembark from other trains",
-        "but nobody should be able to make it on in the",
-        "first place. Except the Old Captain that is!"];
+      const patron3Text = 
+       ["Ever since the switch, the Resurrection",
+        "Loop carriages have been ejecting Weird",
+	"Junk. Garbage chute is normall how",
+        "Riders disembark from trains but nobody",
+        "should be able to make it on in the",
+        "first place!"];
 
-      const patron4Text = ["Don't underestimate the local trains. The",
-        "carriages are thousands of years old and most of",
-        "the guns are offline but they'll still blow you up",
+      const patron4Text = 
+       ["Don't underestimate the local trains.",
+        "Their carriages are thousands of years",
+        "old and most of the defense guns are",
+	"offline but they'll still blow you up",
         "if you get hit."];
 
-      const patron5Text = ["In my gran's day, the Dorado Line was as",
-	"reliable as any but it's missed a lot recently",
-	"I guess even the Train Builders didn't build to",
-	"last forever."];
+      const patron5Text = 
+       ["In my gran's day, the Dorado Line",
+	"was reliable as any but it's missed",
+	"a lot recently. I guess even the",
+	"Train Builders didn't build things",
+	"to last literally forever."];
 
-      const patron6Text = ["There's just no decent sunlight in any",
-	"system I can catch a ride to. I've had to go almost",
-	"full carnivorous. Terrible for the skin."];
+      const patron6Text = 
+       ["There's just no decent sunlight in any systems I can",
+	"catch a ride to. I've had to go almost full carnivorous.",
+	"Terrible for the skin. I hope some intrepid Rider can",
+        "figure out how to ride the New Resurrection Loop soon."];
 
-      const barmaidText = ["Care to try our Perpetual Stew? We may",
-        "have been cut off for a few years but our",
-        "Perpetual Stew has been cooking on two",
-        "centuries. It'll be time yet before it loses those",
-        "otherworld flavours!"]
+      const barmaidText = 
+       ["Care to try our Perpetual Stew?",
+	"This station may have been cut off",
+        "a few years but our Perpetual Stew",
+        "has been cooking on two centuries.",
+        "It'll be decades before it loses its",
+        "complex otherworld flavours!"]
 
       const podGirlText =
        ["...",
 	"",
-        "(She doesn't speak the language but looks",
-        "like she doesn't have trouble ordering stew.)"]
+        "(She doesn't speak the language but it looks",
+        "like she has no trouble ordering stew.)"]
 
-  	  this.add.sprite(415, 390, 'patron1').setInteractive()
+  	  this.add.sprite(415, 385, 'patron1').setInteractive()
         .on('pointerup', function (pointer) {
           showBarText(115, 425, patron1Text);
           captainPlotFlag = 1;
@@ -212,23 +224,23 @@
         });
   	  this.add.sprite(185, 570, 'patron3').setInteractive()
         .on('pointerup', function (pointer) {
-          showBarText(185, 570, patron3Text);
+          showBarText(75, 415, patron3Text);
         });
   	  this.add.sprite(340, 585, 'patron4').setInteractive()
         .on('pointerup', function (pointer) {
-          showBarText(340, 585, patron4Text);
+          showBarText(175, 644, patron4Text);
         });
   	  this.add.sprite(285, 355, 'patron5').setInteractive()
         .on('pointerup', function (pointer) {
-          showBarText(285, 355, patron5Text);
+          showBarText(75, 418, patron5Text);
         });
   	  this.add.sprite(350, 200, 'patron6').setInteractive()
         .on('pointerup', function (pointer) {
-          showBarText(350, 200, patron6Text);
+          showBarText(75, 255, patron6Text);
         });
   	  this.add.sprite(717, 491, 'maid').setInteractive()
         .on('pointerup', function (pointer) {
-          showBarText(467, 541, barmaidText);
+          showBarText(540, 290, barmaidText);
         });
 
       if (podGirlAppears) {
