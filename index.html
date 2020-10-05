@@ -195,7 +195,7 @@
         "centuries. It'll be time yet before it loses those",
         "otherworld flavours!"]
 
-      const podGirlText = 
+      const podGirlText =
        ["...",
 	"",
         "(She doesn't speak the language but looks",
@@ -624,6 +624,7 @@
       const time = new Date().getTime();
 
       // cursors = this.input.keyboard.createCursorKeys();
+      this.input.keyboard.removeAllKeys(true);
       wasd = this.input.keyboard.addKeys({
         up: Phaser.Input.Keyboard.KeyCodes.W,
         down: Phaser.Input.Keyboard.KeyCodes.S,
