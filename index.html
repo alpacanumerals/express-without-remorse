@@ -10,27 +10,30 @@
   <script>
   const navMenu = (scene) => {
     const style = { fontSize: '16px', fill: '#FFF' }
-    const station = scene.add.text(50, 100, 'Station', style)
+    const station = scene.add.text(50, 600, 'Station', style)
     station.setInteractive();
     station.on('pointerup', function () {
       scene.scene.start('StationScene');
     })
-    const bar = scene.add.text(50, 120, 'Dive Bar', style)
+    const bar = scene.add.text(50, 620, 'Dive Bar', style)
     bar.setInteractive();
     bar.on('pointerup', function () {
       scene.scene.start('BarScene');
     })
-    const junkyard = scene.add.text(50, 140, 'Junkyard', style)
+    const junkyard = scene.add.text(50, 640, 'Junkyard', style)
     junkyard.setInteractive();
     junkyard.on('pointerup', function () {
       scene.scene.start('JunkScene');
     })
-    const platform = scene.add.text(50, 160, 'Platform', style)
+    const platform = scene.add.text(50, 660, 'Platform', style)
     platform.setInteractive();
     platform.on('pointerup', function () {
       scene.scene.start('TrainScene');
     })
   }
+
+  var stationText;
+  var openingScene = true;
 
   const StationScene = new Phaser.Class({
 
@@ -57,10 +60,36 @@
 
     create: function ()
     {
+      const starterText = [
+        "Cripes. Did you just try to catch the",
+        "New Resurrection Loop? You're crazy, Rider.",
+        "Those new carriages are almost mint",
+        "condition. Practically all the guns",
+        "are still active. It's suicide!"
+      ];
+
+      const loiterText = [
+        "About ten years ago the Resurrection Loop",
+        "suddenly swapped in fresh looping stock.",
+        "The carriages are almost mint condition;",
+        "practically all the guns are still active",
+        "and the dwell time is almost nothing. It's",
+        "almost impossible to board!"
+      ];
+
       this.add.sprite(450, 360, 'platform');
-      this.add.sprite(622, 254, 'loiterer');
+      this.add.sprite(622, 254, 'loiterer').setInteractive()
+        .on('pointerup', function (pointer) {
+          stationText.setText(loiterText);
+        });
       this.add.sprite(825, 85, 'departures');
       this.add.sprite(105, 85, 'alienmap');
+
+      stationText = this.add.text(250, 054, '');
+      if (openingScene) {
+        stationText.setText(starterText);
+        openingScene = false;
+      }
 
       navMenu(this);
     }
@@ -143,40 +172,40 @@
         "like she doesn't have trouble ordering the stew.)"]
 
   	  this.add.sprite(415, 390, 'patron1').setInteractive()
-      .on('pointerup', function (pointer) {
-        showBarText(115, 425, patron1Text);
-        captainPlotFlag = 1;
-      });
+        .on('pointerup', function (pointer) {
+          showBarText(115, 425, patron1Text);
+          captainPlotFlag = 1;
+        });
   	  this.add.sprite(545, 375, 'patron2').setInteractive()
-      .on('pointerup', function (pointer) {
-        showBarText(555, 275, patron2Text);
-      });
+        .on('pointerup', function (pointer) {
+          showBarText(555, 275, patron2Text);
+        });
   	  this.add.sprite(185, 570, 'patron3').setInteractive()
-      .on('pointerup', function (pointer) {
-        showBarText(185, 570, patron3Text);
-      });
+        .on('pointerup', function (pointer) {
+          showBarText(185, 570, patron3Text);
+        });
   	  this.add.sprite(340, 585, 'patron4').setInteractive()
-      .on('pointerup', function (pointer) {
-        showBarText(340, 585, patron4Text);
-      });
+        .on('pointerup', function (pointer) {
+          showBarText(340, 585, patron4Text);
+        });
   	  this.add.sprite(285, 355, 'patron5').setInteractive()
-      .on('pointerup', function (pointer) {
-        showBarText(285, 355, patron5Text);
-      });
+        .on('pointerup', function (pointer) {
+          showBarText(285, 355, patron5Text);
+        });
   	  this.add.sprite(350, 200, 'patron6').setInteractive()
-      .on('pointerup', function (pointer) {
-        showBarText(350, 200, patron6Text);
-      });
+        .on('pointerup', function (pointer) {
+          showBarText(350, 200, patron6Text);
+        });
   	  this.add.sprite(717, 491, 'maid').setInteractive()
-      .on('pointerup', function (pointer) {
-        showBarText(467, 541, barmaidText);
-      });
+        .on('pointerup', function (pointer) {
+          showBarText(467, 541, barmaidText);
+        });
 
       if (podGirlAppears) {
     	  this.add.sprite(655, 206, 'podg').setInteractive()
-        .on('pointerup', function (pointer) {
-          showBarText(400, 226, podGirlText);
-        });
+          .on('pointerup', function (pointer) {
+            showBarText(400, 226, podGirlText);
+          });
       }
 
       barText = this.add.text(0, 0 , '');
@@ -208,8 +237,8 @@
   var cashText;
 
   const upgradeConvo = [
-    "Urgh Shogoth urk ftagn afk credeets!",
-    "(Shogoth have wares if Rider have credits)",
+    "Urgh Shoggoth urk ftagn afk credeets!",
+    "(Shoggoth have wares if Rider have credits)",
   ]
   var upgradeHeaderText;
   var enginesText;
@@ -674,7 +703,7 @@
         gravity: { y: 0 },
         debug: false,
       }},
-    scene: [StationScene, BarScene, JunkScene, TrainScene]
+    scene: [TrainScene, StationScene, BarScene, JunkScene]
   };
 
   var game = new Phaser.Game(config);
