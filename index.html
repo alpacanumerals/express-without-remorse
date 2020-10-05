@@ -137,9 +137,11 @@
       navMenu(this);
 
       const launchBoss = () => {
+        trainType = 0;
         this.scene.start('TrainScene');
       }
       const launchLocal = () => {
+        trainType = 1;
         this.scene.start('TrainScene');
       }
 
@@ -247,7 +249,7 @@
         "It'll be decades before it loses",
         "its complex otherworld flavours!"]
 
-      const podGirlText = 
+      const podGirlText =
        ["...",
 	"",
         "(She doesn't speak the language but it looks",
@@ -610,10 +612,6 @@
     "TRAIN DEPARTING",
     "PLEASE MIND THE CLOSING DOORS",
   ];
-  // var shotDownText = [
-  //   "CUSTOMER FALLEN ON PLATFORM",
-  //   "PLEASE SEEK EMERGENCY ASSISTANCE",
-  // ];
   var shotDownText = [""];
   var failureStyle = {
     align: 'center',
@@ -638,6 +636,8 @@
   var stage1end;
   var stage2start;
   var stage2end;
+
+  var trainType = 0;
 
   const TrainScene = new Phaser.Class({
 
@@ -664,11 +664,10 @@
     },
 
     create: function () {
-      distance = 10000;
-      stage1start = 9000;
-      stage1end = 5500;
-      stage2start = 4500;
-      stage2end = 1000;
+      stage1start = 10000;
+      stage1end = 6500;
+      stage2start = 5500;
+      stage2end = 2000;
       timeRemaining = 120;
 
       globalSpeed = 100;
@@ -676,6 +675,7 @@
       const time = new Date().getTime();
 
       // cursors = this.input.keyboard.createCursorKeys();
+      this.input.keyboard.removeAllKeys(true);
       wasd = this.input.keyboard.addKeys({
         up: Phaser.Input.Keyboard.KeyCodes.W,
         down: Phaser.Input.Keyboard.KeyCodes.S,
@@ -793,7 +793,7 @@
       this.physics.add.collider(rightBulletWall, bullets, hitWall);
 
       junk = this.physics.add.group({
-        key: 'junk1',
+        key: 'junk2',
         repeat: 100,
         setXY: {x: 10, y: 10},
         collideWorldBounds: false,
@@ -882,7 +882,6 @@
           bullet.body.enable = true;
           bullet.setVelocityY(globalSpeed);
           bullet.setVelocityX(300);
-          //bullet.setCircle(3, 11, 14);
           if (bulletIndex < bullets.getChildren().length-1) {
             ++bulletIndex;
           } else {
@@ -908,7 +907,29 @@
         const shoot = () => {
           const piece = junk.getChildren()[junkIndex];
           piece.enableBody();
-          piece.setTexture('junk1');
+          piece.setTexture('junk4');
+          piece.body.reset(turret.x, turret.y);
+          piece.setActive(true);
+          piece.body.enable = true;
+          piece.speedOffset = Phaser.Math.Between(-50, 50);
+          piece.setVelocityY(globalSpeed + piece.speedOffset);
+          piece.setVelocityX(Phaser.Math.Between(100, 400));
+          if (junkIndex < junk.getChildren().length-1) {
+            ++junkIndex;
+          } else {
+            junkIndex = 0;
+          }
+        };
+        if (time > turret.junkTimer) {
+          shoot();
+          turret.junkTimer = time + Phaser.Math.Between(15000, 20000);
+        };
+      }
+      const heavyJunk = (turret, time) => {
+        const shoot = () => {
+          const piece = junk.getChildren()[junkIndex];
+          piece.enableBody();
+          piece.setTexture('junk4');
           piece.body.reset(turret.x, turret.y);
           piece.setActive(true);
           piece.body.enable = true;
@@ -926,6 +947,7 @@
           turret.junkTimer = time + Phaser.Math.Between(5000, 10000);
         };
       }
+
       const noJunk = (turret, time) => {
         const shoot = () => {}
         if (time > turret.junkTimer) {
@@ -933,9 +955,30 @@
           turret.junkTimer = time + Phaser.Math.Between(5000, 10000);
         };
       }
-      turrets.children.iterate((turret) => turret.junkTimer = time + Phaser.Math.Between(0, 2000));
+      turrets.children.iterate((turret) => turret.junkTimer = time + Phaser.Math.Between(0, 5000));
       turrets.children.iterate((turret) => turret.junkBehaviour = noJunk);
 
+      switch (trainType) {
+        case 1:
+          stage0shooting = noShot;
+          stage1shooting = basicShot;
+          stage2shooting = basicShot;
+          stage0junk = noJunk;
+          stage1junk = heavyJunk;
+          stage2junk = heavyJunk;
+          distance = 6000;
+          break;
+        case 0:
+        default:
+          stage0shooting = noShot;
+          stage1shooting = basicShot;
+          stage2shooting = trackingShot;
+          stage0junk = noJunk;
+          stage1junk = basicJunk;
+          stage2junk = basicJunk;
+          distance = 11000;
+          break
+      }
       stage0shooting = noShot;
       stage1shooting = basicShot;
       stage2shooting = trackingShot;
@@ -1037,7 +1080,7 @@
           emitter.setSpeed(50);
           emitter.setBlendMode(Phaser.BlendModes.ADD);
         }
-        if (globalTime > killTime + 5000) {
+        if (globalTime > killTime + 3000) {
           this.scene.start('StationScene');
         }
       }
