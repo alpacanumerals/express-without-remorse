@@ -508,6 +508,7 @@
     bullet.disableBody(true, false);
     bullet.body.reset(10, 10);
     bullet.setActive(false);
+    bullet.updateBehaviour = () => {};
   };
 
   const updateDistance = (delta) => {
@@ -656,6 +657,11 @@
         setXY: {x: 10, y: 10},
         collideWorldBounds: false,
       });
+      bullets.children.iterate((bullet) => {
+        bullet.disableBody(true, false);
+        bullet.setActive(false);
+        bullet.updateBehaviour = () => {};
+      })
       lowerBulletWall = this.physics.add.image(450, 920, 'bote');
       lowerBulletWall.setImmovable();
       lowerBulletWall.body.setSize(1100, 100, true);
@@ -701,16 +707,59 @@
           } else {
             bulletIndex = 0;
           }
-        }
+        };
         if (time > turret.shotTimer) {
           shoot();
           turret.shotTimer = time + Phaser.Math.Between(500, 2000);
-        }
+        };
       };
-      const trackerShot = (turret, time) => {};
-      const beamShot = (turret, time) => {};
+      const trackerShot = (turret, time) => {
+        const home = (bullet) => () => {
+          const xDist = bote.getCenter().x - bullet.getCenter().x;
+          bullet.setAccelerationX(xDist);
+        };
+        const shoot = () => {
+          const bullet = bullets.getChildren()[bulletIndex];
+          bullet.body.reset(turret.x, turret.y);
+          bullet.setActive(true);
+          bullet.body.enable = true;
+          bullet.setVelocityY(globalSpeed);
+          bullet.setVelocityX(0);
+          bullet.updateBehaviour = home(bullet);
+          //bullet.setCircle(3, 11, 14);
+          if (bulletIndex < bullets.getChildren().length-1) {
+            ++bulletIndex;
+          } else {
+            bulletIndex = 0;
+          }
+        };
+        if (time > turret.shotTimer) {
+          shoot();
+          turret.shotTimer = time + Phaser.Math.Between(500, 2000);
+        };
+      };
+      const beamShot = (turret, time) => {
+        const shoot = () => {
+          const bullet = bullets.getChildren()[bulletIndex];
+          bullet.body.reset(turret.x, turret.y);
+          bullet.setActive(true);
+          bullet.body.enable = true;
+          bullet.setVelocityY(globalSpeed);
+          bullet.setVelocityX(300);
+          //bullet.setCircle(3, 11, 14);
+          if (bulletIndex < bullets.getChildren().length-1) {
+            ++bulletIndex;
+          } else {
+            bulletIndex = 0;
+          }
+        };
+        if (time > turret.shotTimer) {
+          shoot();
+          turret.shotTimer = time + Phaser.Math.Between(500, 2000);
+        };
+      };
       turrets.children.iterate((turret) => turret.shotTimer = time + 10000 + Phaser.Math.Between(0, 2000));
-      turrets.children.iterate((turret) => turret.shootBehaviour = basicShot);
+      turrets.children.iterate((turret) => turret.shootBehaviour = trackerShot);
 
       particles = this.add.particles('spark');
 
@@ -728,6 +777,12 @@
 
       updateDistance(globalSpeed*delta/1000);
       updateTimeRemaining(delta/1000);
+
+      bullets.children.iterate((bullet) => {
+        if (bullet.body.enable = true) {
+          bullet.updateBehaviour();
+        }
+      })
 
       turrets.setVelocityY(globalSpeed);
 
