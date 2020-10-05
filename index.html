@@ -544,6 +544,16 @@
 
   var particles;
 
+  var stage0shooting;
+  var stage1shooting;
+  var stage2shooting;
+  var stage3shooting;
+
+  var stage1start;
+  var stage1end;
+  var stage2start;
+  var stage2end;
+
   const TrainScene = new Phaser.Class({
 
     Extends: Phaser.Scene,
@@ -565,8 +575,12 @@
     },
 
     create: function () {
-      distance = 50000;
-      timeRemaining = 30;
+      distance = 10000;
+      stage1start = 9000;
+      stage1end = 5500;
+      stage2start = 4500;
+      stage2end = 1000;
+      timeRemaining = 120;
 
       globalSpeed = 100;
 
@@ -609,6 +623,7 @@
       bote.setImmovable();
       bote.invuln = false;
       bote.invulnExpire = 0;
+      shotDown = false;
 
       const hitBote = (ship) => {
         --hp;
@@ -637,10 +652,12 @@
       });
 
       const resetTurret = (sentry, turret) => {
+        turret.shootBehaviour = currentShooting;
         turret.setY(-720);
       };
 
       const resetTurretUp = (sentry, turret) => {
+        turret.shootBehaviour = currentShooting;
         turret.setY(720);
       };
 
@@ -762,8 +779,21 @@
           turret.shotTimer = time + Phaser.Math.Between(500, 2000);
         };
       };
-      turrets.children.iterate((turret) => turret.shotTimer = time + 10000 + Phaser.Math.Between(0, 2000));
-      turrets.children.iterate((turret) => turret.shootBehaviour = trackingShot);
+      const noShot = (turret, time) => {
+        const shoot = () => {}
+        if (time > turret.shotTimer) {
+          shoot();
+          turret.shotTimer = time + Phaser.Math.Between(500, 2000);
+        };
+      }
+      turrets.children.iterate((turret) => turret.shotTimer = time + Phaser.Math.Between(0, 2000));
+      turrets.children.iterate((turret) => turret.shootBehaviour = noShot);
+
+      stage0shooting = noShot;
+      stage1shooting = basicShot;
+      stage2shooting = trackingShot;
+
+      currentShooting = stage0shooting;
 
       particles = this.add.particles('spark');
 
@@ -781,6 +811,24 @@
 
       updateDistance(globalSpeed*delta/1000);
       updateTimeRemaining(delta/1000);
+
+      if (distance > stage1start) {
+        currentShooting = stage0shooting;
+      } else {
+        if (distance > stage1end) {
+          currentShooting = stage1shooting;
+        } else {
+          if (distance > stage2start) {
+            currentShooting = stage0shooting;
+          } else {
+            if (distance > stage2end) {
+              currentShooting = stage2shooting;
+            } else {
+              currentShooting = stage0shooting;
+            }
+          }
+        }
+      }
 
       bullets.children.iterate((bullet) => {
         if (bullet.body.enable = true) {
@@ -857,7 +905,7 @@
       default: 'arcade',
       arcade: {
         gravity: { y: 0 },
-        debug: false,
+        debug: true,
       }},
     scene: [TrainScene, StationScene, BarScene, JunkScene]
   };
