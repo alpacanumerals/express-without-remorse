@@ -675,7 +675,7 @@
       leftBulletWall.setImmovable();
       leftBulletWall.body.setSize(100, 1640, true);
 
-      rightBulletWall = this.physics.add.image(1200, 360, 'bote');
+      rightBulletWall = this.physics.add.image(975, 360, 'bote');
       rightBulletWall.setImmovable();
       rightBulletWall.body.setSize(100, 1640, true);
 
@@ -697,13 +697,13 @@
       const basicShot = (turret, time) => {
         const shoot = () => {
           const bullet = bullets.getChildren()[bulletIndex];
-          bullet.setTexture('bullet');
+          bullet.enableBody();
+          bullet.setTexture('bullet2');
+          bullet.setCircle(9, 7, 7);
           bullet.body.reset(turret.x, turret.y);
           bullet.setActive(true);
-          bullet.body.enable = true;
           bullet.setVelocityY(globalSpeed);
           bullet.setVelocityX(300);
-          //bullet.setCircle(3, 11, 14);
           if (bulletIndex < bullets.getChildren().length-1) {
             ++bulletIndex;
           } else {
@@ -715,21 +715,22 @@
           turret.shotTimer = time + Phaser.Math.Between(500, 2000);
         };
       };
-      const trackerShot = (turret, time) => {
+      const trackingShot = (turret, time) => {
         const home = (bullet) => () => {
           const xDist = bote.getCenter().x - bullet.getCenter().x;
-          bullet.setAccelerationX(xDist);
+          bullet.setAccelerationX(xDist*2);
         };
         const shoot = () => {
           const bullet = bullets.getChildren()[bulletIndex];
-          bullet.setTexture('bullet2')
+          bullet.enableBody();
+          bullet.setTexture('bullet');
+          bullet.setCircle(3, 3, 3);
+          bullet.setMaxVelocity(200);
           bullet.body.reset(turret.x, turret.y);
           bullet.setActive(true);
-          bullet.body.enable = true;
           bullet.setVelocityY(globalSpeed);
           bullet.setVelocityX(0);
           bullet.updateBehaviour = home(bullet);
-          //bullet.setCircle(3, 11, 14);
           if (bulletIndex < bullets.getChildren().length-1) {
             ++bulletIndex;
           } else {
@@ -762,7 +763,7 @@
         };
       };
       turrets.children.iterate((turret) => turret.shotTimer = time + 10000 + Phaser.Math.Between(0, 2000));
-      turrets.children.iterate((turret) => turret.shootBehaviour = trackerShot);
+      turrets.children.iterate((turret) => turret.shootBehaviour = trackingShot);
 
       particles = this.add.particles('spark');
 
