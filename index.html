@@ -879,6 +879,27 @@
           turret.shotTimer = time + Phaser.Math.Between(500, 2000);
         };
       };
+      const heavyShot = (turret, time) => {
+        const shoot = () => {
+          const bullet = bullets.getChildren()[bulletIndex];
+          bullet.enableBody();
+          bullet.setTexture('bullet2');
+          bullet.setCircle(9, 7, 7);
+          bullet.body.reset(turret.x, turret.y);
+          bullet.setActive(true);
+          bullet.setVelocityY(globalSpeed);
+          bullet.setVelocityX(300);
+          if (bulletIndex < bullets.getChildren().length-1) {
+            ++bulletIndex;
+          } else {
+            bulletIndex = 0;
+          }
+        };
+        if (time > turret.shotTimer) {
+          shoot();
+          turret.shotTimer = time + Phaser.Math.Between(250, 750);
+        };
+      };
       const trackingShot = (turret, time) => {
         const home = (bullet) => () => {
           const xDist = bote.getCenter().x - bullet.getCenter().x;
@@ -906,25 +927,7 @@
           turret.shotTimer = time + Phaser.Math.Between(500, 2000);
         };
       };
-      const beamShot = (turret, time) => {
-        const shoot = () => {
-          const bullet = bullets.getChildren()[bulletIndex];
-          bullet.body.reset(turret.x, turret.y);
-          bullet.setActive(true);
-          bullet.body.enable = true;
-          bullet.setVelocityY(globalSpeed);
-          bullet.setVelocityX(300);
-          if (bulletIndex < bullets.getChildren().length-1) {
-            ++bulletIndex;
-          } else {
-            bulletIndex = 0;
-          }
-        };
-        if (time > turret.shotTimer) {
-          shoot();
-          turret.shotTimer = time + Phaser.Math.Between(500, 2000);
-        };
-      };
+
       const noShot = (turret, time) => {
         const shoot = () => {}
         if (time > turret.shotTimer) {
@@ -1005,7 +1008,7 @@
         case 0:
         default:
           stage0shooting = noShot;
-          stage1shooting = basicShot;
+          stage1shooting = heavyShot;
           stage2shooting = trackingShot;
           stage0junk = noJunk;
           stage1junk = basicJunk;
