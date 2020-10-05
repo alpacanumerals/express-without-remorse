@@ -42,9 +42,7 @@
     {
       Phaser.Scene.call(this, { key: 'StationScene' });
     },
-	//WARNING WARNING
-	//A Dangerus Bad Code -MALCODE- Is Approaching
-	//NO REFUGE
+
     preload: function ()
     {
       this.load.image('platform', 'assets/platform.png');
@@ -63,15 +61,14 @@
       this.add.sprite(622, 254, 'loiterer');
       this.add.sprite(825, 85, 'departures');
       this.add.sprite(105, 85, 'alienmap');
-	  //REFUGE FOUND
+
       navMenu(this);
     }
   });
 
-  var maxGlobalSpeed = 200;
-  var maxHp = 0;
-  var tacticalSpeed = 200;
-  var diagonalSpeed = Math.sqrt((tacticalSpeed**2)/2);
+  var barText;
+  var podGirlAppears = true;
+  var captainPlotFlag = 0;
 
   const BarScene = new Phaser.Class({
 
@@ -83,9 +80,7 @@
     {
       Phaser.Scene.call(this, { key: 'BarScene' });
     },
-	//WARNING WARNING
-	//A Dangerus Bad Code -MALCODE- Is Approaching
-	//NO REFUGE
+
     preload: function ()
     {
       this.load.image('bar', 'assets/spacebar.png');
@@ -103,27 +98,109 @@
     {
       this.add.sprite(450, 360, 'bar');
 
-  	  this.add.sprite(415, 390, 'patron1');
-  	  this.add.sprite(545, 375, 'patron2');
-  	  this.add.sprite(185, 570, 'patron3');
-  	  this.add.sprite(340, 585, 'patron4');
-  	  this.add.sprite(285, 355, 'patron5');
-  	  this.add.sprite(350, 200, 'patron6');
-  	  this.add.sprite(717, 491, 'maid');
-  	   //Should only appear after finding the pod.
-  	  this.add.sprite(655, 206, 'podg');
+      const showBarText = (x, y, text) => {
+        console.log(x + y + text);
+        barText.setText(text);
+        barText.setPosition(x, y);
+      }
+
+      const patron1Text = ["I hear the Old Captain at the Junkyard rode",
+        "the New Resurrection here just after the switch.",
+        "He doesn't look like it but he must be a hell of a Rider."];
+
+      const patron2Text = ["Ever since the switch, this",
+        "station has been cut right off.",
+        "At least the local lines are still",
+        "rideable but they don't lead to",
+        "nothing but crappy backwaters.",
+        "You can make okay money off",
+        "running them though, and it's",
+        "not too dangerous."];
+
+      const patron3Text = ["Ever since the switch, the Resurrection Loop",
+        "carriages have been ejecting Weird Junk. That's",
+        "normally how Riders disembark from other trains",
+        "but nobody should be able to make it on in the",
+        "first place. Except the Old Captain that is!"];
+
+      const patron4Text = ["Don't underestimate the local trains. The",
+        "carriages are thousands of years old and most of",
+        "the guns are offline but they'll still blow you up",
+        "if you get hit."];
+
+      const patron5Text = ["..."];
+
+      const patron6Text = ["..."];
+
+      const barmaidText = ["Care to try our Perpetual Stew? We may",
+        "have been cut off for a few years but our",
+        "Perpetual Stew has been cooking on two",
+        "centuries. It'll be time yet before it loses those",
+        "otherworld flavours!"]
+
+      const podGirlText = ["...",
+        "(She doesn't speak the language but it looks",
+        "like she doesn't have trouble ordering the stew.)"]
+
+  	  this.add.sprite(415, 390, 'patron1').setInteractive()
+      .on('pointerup', function (pointer) {
+        showBarText(115, 425, patron1Text);
+        captainPlotFlag = 1;
+      });
+  	  this.add.sprite(545, 375, 'patron2').setInteractive()
+      .on('pointerup', function (pointer) {
+        showBarText(555, 275, patron2Text);
+      });
+  	  this.add.sprite(185, 570, 'patron3').setInteractive()
+      .on('pointerup', function (pointer) {
+        showBarText(185, 570, patron3Text);
+      });
+  	  this.add.sprite(340, 585, 'patron4').setInteractive()
+      .on('pointerup', function (pointer) {
+        showBarText(340, 585, patron4Text);
+      });
+  	  this.add.sprite(285, 355, 'patron5').setInteractive()
+      .on('pointerup', function (pointer) {
+        showBarText(285, 355, patron5Text);
+      });
+  	  this.add.sprite(350, 200, 'patron6').setInteractive()
+      .on('pointerup', function (pointer) {
+        showBarText(350, 200, patron6Text);
+      });
+  	  this.add.sprite(717, 491, 'maid').setInteractive()
+      .on('pointerup', function (pointer) {
+        showBarText(467, 541, barmaidText);
+      });
+
+      if (podGirlAppears) {
+    	  this.add.sprite(655, 206, 'podg').setInteractive()
+        .on('pointerup', function (pointer) {
+          showBarText(400, 226, podGirlText);
+        });
+      }
+
+      barText = this.add.text(0, 0 , '');
 
       navMenu(this);
     }
   });
-	//REFUGE FOUND
+
+  var maxGlobalSpeed = 200;
+  var maxHp = 0;
+  var tacticalSpeed = 200;
+  var diagonalSpeed = Math.sqrt((tacticalSpeed**2)/2);
+
   var junkCount = 5;
   var creditCount = 0;
 
   const junkConvo1 = [
     "Riding junk off the New Resurrection Loop?",
     "Watch you don't get yourself killed.",
-  ]
+  ];
+  const junkConvo2 = [
+    "Ace Rider? Don't make me laugh.",
+  ];
+  const junkConvo3 = []
   var junkHeaderText;
   var junkText;
   var sellText;
@@ -160,7 +237,6 @@
 
     create: function ()
     {
-
       const updateMoney = (credits) => {
         creditCount += credits;
         cashText.setText('Credits: ' + creditCount);
@@ -178,7 +254,15 @@
         quitText.setText('');
       }
       const launchJunkShop = () => {
-        junkHeaderText.setText(junkConvo1);
+        switch (captainPlotFlag) {
+          case 1:
+            junkHeaderText.setText(junkConvo2);
+            break;
+          case 0:
+          default:
+            junkHeaderText.setText(junkConvo1);
+            break;
+        }
         junkText.setText('Junk: ' + junkCount);
         sellText.setText('SELL');
         quitText.setText('QUIT');
@@ -202,6 +286,7 @@
         if (creditCount >= price){
           updateMoney(-price);
           tacticalSpeed += 50;
+          diagonalSpeed = Math.sqrt((tacticalSpeed**2)/2);
         }
       }
       const buyShield = () => {
