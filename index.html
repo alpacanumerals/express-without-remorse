@@ -298,8 +298,8 @@
     }
   });
 
-  var maxGlobalSpeed = 200;
-  var maxHp = 1;
+  var maxGlobalSpeed = 100;
+  var maxHp = 0;
   var tacticalSpeed = 200;
   var diagonalSpeed = Math.sqrt((tacticalSpeed**2)/2);
 
@@ -648,6 +648,11 @@
 
   var trainType = 0;
 
+  var boom;
+
+  var klaxonSounded;
+  var klaxon;
+
   const TrainScene = new Phaser.Class({
 
     Extends: Phaser.Scene,
@@ -670,6 +675,16 @@
       this.load.image('junk2', 'assets/junk2.png');
       this.load.image('junk3', 'assets/junk3.png');
       this.load.image('junk4', 'assets/junk4.png');
+
+      this.load.audio('klaxon', ['assets/klaxon.wav']);
+      this.load.audio('boom', ['assets/player-explodes.wav']);
+      this.load.audio('shot', ['assets/shot.wav']);
+      this.load.audio('throttleUp', ['assets/throttle-up.wav']);
+      this.load.audio('throttleDown', ['assets/throttle-down.wav']);
+
+      this.load.audio('announce-rloop', ['assets/announce-rloop.mp3']);
+      this.load.audio('announce-scross', ['assets/announce-scross.mp3']);
+      this.load.audio('yellowLine', ['assets/yellowline.mp3']);
     },
 
     create: function () {
@@ -677,7 +692,7 @@
       stage1end = 6500;
       stage2start = 5500;
       stage2end = 2000;
-      timeRemaining = 120;
+      timeRemaining = 60;
 
       globalSpeed = 100;
 
@@ -697,13 +712,20 @@
         down: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN),
       };
 
+      klaxon = this.sound.add('klaxon');
+      boom = this.sound.add('boom');
+      const throttleUp = this.sound.add('throttleUp');
+      const throttleDown = this.sound.add('throttleDown');
+      const shot = this.sound.add('shot');
       throttle.up.on('down', function (key, event) {
         if (!shotDown) {
+          throttleUp.play();
           changeGlobalSpeed(50);
         }
       });
       throttle.down.on('down', function (key, event) {
         if (!shotDown) {
+          throttleDown.play();
           changeGlobalSpeed(-50);
         }
       });
@@ -721,6 +743,7 @@
 
       const hitBote = (ship) => {
         --hp;
+        shot.play();
         shieldText.setText('Shields: ' + hp);
         ship.activateStun();
       }
@@ -967,6 +990,7 @@
       turrets.children.iterate((turret) => turret.junkTimer = time + Phaser.Math.Between(0, 5000));
       turrets.children.iterate((turret) => turret.junkBehaviour = noJunk);
 
+      var announce;
       switch (trainType) {
         case 1:
           stage0shooting = noShot;
@@ -976,6 +1000,7 @@
           stage1junk = heavyJunk;
           stage2junk = heavyJunk;
           distance = 6000;
+          announce = this.sound.add('announce-scross').play();
           break;
         case 0:
         default:
@@ -985,7 +1010,8 @@
           stage0junk = noJunk;
           stage1junk = basicJunk;
           stage2junk = basicJunk;
-          distance = 1000;
+          distance = 11000;
+          announce = this.sound.add('announce-rloop').play();
           break
       }
 
@@ -1003,6 +1029,8 @@
       this.add.image(90,360,'sidebar');
       this.physics.world.setBounds(180, 0, 720, 720);
       //navMenu(this);
+
+      // var lineWarn = this.sound.add('yellowLine').play();
     },
 
     update: function (gameTime, delta) {
@@ -1018,6 +1046,10 @@
         currentJunk = stage0junk;
       } else {
         if (distance > stage1end) {
+          if (!klaxonSounded) {
+            klaxon.play();
+            klaxonSounded = true;
+          }
           currentShooting = stage1shooting;
           currentJunk = stage1junk;
         } else {
@@ -1026,6 +1058,10 @@
             currentJunk = stage0junk;
           } else {
             if (distance > stage2end) {
+              if (!klaxonSounded) {
+                klaxon.play();
+                klaxonSounded = true;
+              }
               currentShooting = stage2shooting;
               currentJunk = stage2junk;
             } else {
@@ -1066,6 +1102,7 @@
       // lose condition
       if (hp < 0) {
         if (!shotDown) {
+          boom.play();
           killTime = globalTime;
           setAlert(shotDownText);
           shotDown = true;
